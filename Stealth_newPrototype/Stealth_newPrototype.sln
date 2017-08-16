@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stealth_newPrototype.CSharp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stealth_newPrototype.CSharp.Editor.Plugins", "Stealth_newPrototype.CSharp.Editor.Plugins.csproj", "{C1C56E65-150C-4267-4810-0C825E6598ED}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stealth_newPrototype.CSharp.Editor", "Stealth_newPrototype.CSharp.Editor.csproj", "{0578ECCE-4200-A3AD-1879-92B525FE1EB9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,10 @@ Global
 		{C1C56E65-150C-4267-4810-0C825E6598ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1C56E65-150C-4267-4810-0C825E6598ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1C56E65-150C-4267-4810-0C825E6598ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0578ECCE-4200-A3AD-1879-92B525FE1EB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0578ECCE-4200-A3AD-1879-92B525FE1EB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0578ECCE-4200-A3AD-1879-92B525FE1EB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0578ECCE-4200-A3AD-1879-92B525FE1EB9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
