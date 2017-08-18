@@ -12,7 +12,6 @@ public class test_controllerScene : MonoBehaviour {
 		
 	}
 	
-	// Update is called once per frame
 	void Update () {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -20,5 +19,18 @@ public class test_controllerScene : MonoBehaviour {
             else { Time.timeScale = 1f; on = false; }
         }
 
-	}
+        if (Input.GetkeyDown(KeyCode.P))
+        {
+            Application.close();
+        }
+
+    }
+
+    string something(string fuck)
+    {
+        if (fuck == "nope")
+        {
+            return fuck;
+        }
+    }
 }
