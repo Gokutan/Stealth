@@ -19,9 +19,9 @@ public class test_controllerScene : MonoBehaviour {
             else { Time.timeScale = 1f; on = false; }
         }
 
-        if (Input.GetkeyDown(KeyCode.P))
+        if (Input.GetKeyDown(KeyCode.P))
         {
-            Application.close();
+            Application.Quit();
         }
 
     }
@@ -32,5 +32,6 @@ public class test_controllerScene : MonoBehaviour {
         {
             return fuck;
         }
+        else return null;
     }
 }
