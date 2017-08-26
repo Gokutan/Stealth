@@ -128,7 +128,14 @@
     <Compile Include="Assets\Morgue Room PBR\Standard Assets\Effects\ImageEffects\Scripts\Twirl.cs" />
     <Compile Include="Assets\Morgue Room PBR\Standard Assets\Effects\ImageEffects\Scripts\VignetteAndChromaticAberration.cs" />
     <Compile Include="Assets\Morgue Room PBR\Standard Assets\Effects\ImageEffects\Scripts\Vortex.cs" />
+    <Compile Include="Assets\NavMeshComponents\Scripts\NavMeshLink.cs" />
+    <Compile Include="Assets\NavMeshComponents\Scripts\NavMeshModifier.cs" />
+    <Compile Include="Assets\NavMeshComponents\Scripts\NavMeshModifierVolume.cs" />
+    <Compile Include="Assets\NavMeshComponents\Scripts\NavMeshSurface.cs" />
     <Compile Include="Assets\Script\CameraController.cs" />
+    <Compile Include="Assets\Script\GuardManager.cs" />
+    <Compile Include="Assets\Script\LocalNavMeshBuilder.cs" />
+    <Compile Include="Assets\Script\NavMeshSourceTag.cs" />
     <Compile Include="Assets\Script\test_controllerScene.cs" />
   </ItemGroup>
   <ItemGroup>
