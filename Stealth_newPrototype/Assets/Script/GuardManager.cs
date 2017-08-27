@@ -8,6 +8,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 
         public static event System.Action OnguardHadSpottedPlayer;
 
+
         public Transform pathHolder;
         public Vector3[] m_waypoint;
         public float turnSpeed = 90; //90degree per sec
@@ -28,9 +29,21 @@ namespace UnityStandardAssets.Characters.ThirdPerson
         ThirdPersonUserControl tp;
         ThirdPersonCharacter tpc;
 
+        private enum AiModes
+        {
+            Patrol,
+            Found,
+            Detected
+        }
+
+        private AiModes modes;
+
+        [SerializeField]
+        private bool make_follow;
+
         void Start()
         {
-
+            make_follow = true;
             player = GameObject.FindGameObjectWithTag("Player").transform;
             tp = player.GetComponent<ThirdPersonUserControl>();
             tpc = player.GetComponent<ThirdPersonCharacter>();
@@ -46,23 +59,15 @@ namespace UnityStandardAssets.Characters.ThirdPerson
                 m_waypoint[i] = new Vector3(m_waypoint[i].x, transform.position.y, m_waypoint[i].z);
 
             }
-            StartCoroutine(FollowPath(m_waypoint));
-            // StartCoroutine(Patrolling(m_waypoint));
+            //StartCoroutine(FollowPath(m_waypoint));
 
 
         }
 
         void Update()
         {
-            //if (currentCoroutine != null)
-            //{
-            //    StopCoroutine(currentCoroutine);
-            //}else
-            //{
-            //    currentCoroutine = Patrolling(m_waypoint);
-            //    StartCoroutine(currentCoroutine);
-            //}
 
+           
             if (CanseePlayer())
             {
                 spotLight.color = Color.red;
@@ -71,21 +76,50 @@ namespace UnityStandardAssets.Characters.ThirdPerson
                     OnguardHadSpottedPlayer();
                 }
 
-
-                Time.timeScale = 0;
-              
-
+                make_follow = false;
+                //Time.timeScale = 0;
             }
             else
             {
                 //If want the color to slowy turn red 
                 //spotLight.color = Color.Lerp(OriSpotLightColor,Color.red,float which you want it to turen);
                 spotLight.color = OriSpotLightColor;
-               // Time.timeScale = 1;
-            }
+                make_follow = true;
+                if (currentCoroutine != null)
+                {
+                    StopCoroutine(currentCoroutine);
+                }
+                currentCoroutine = FollowPath(m_waypoint);
+                StartCoroutine(currentCoroutine);
+            
+        }
 
         }
 
+        //void FixedUpdate()
+        //{
+
+        //    if (currentCoroutine != null)
+        //    {
+        //        StopCoroutine(currentCoroutine);
+        //    }
+        //    currentCoroutine = FollowPath(m_waypoint);
+        //    StartCoroutine(currentCoroutine);
+        //}
+
+
+        void CheckMode()
+        {
+            switch (modes)
+            {
+                case AiModes.Patrol:
+                    {
+
+                    }
+                    break;
+            }
+               
+        }
 
 
         void OnDrawGizmos()
@@ -143,7 +177,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
             int targetWaypointIndex = 1;
             Vector3 targetWaypoint = waypoints[targetWaypointIndex];
             transform.LookAt(targetWaypoint);
-            while (true)
+            while (make_follow == true)
             {
                 transform.position = Vector3.MoveTowards(transform.position, targetWaypoint, speed * Time.deltaTime);
                 //    transform.rotation = Quaternion.LookRotation(transform.rotation,targetWaypoint.rotation)
@@ -160,24 +194,5 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 
         }
 
-        //IEnumerator Patrolling(Vector3[] destination )
-        //{
-
-        //    foreach(Vector3 dest in destination)
-        //    {
-
-        //        yield return StartCoroutine(moving(dest, 8));
-        //    }
-
-        //}
-
-        //IEnumerator moving(Vector3 destination , float speed)
-        //{
-        //    while (transform.position != destination)
-        //    {
-        //        transform.position = Vector3.MoveTowards(transform.position, destination, speed * Time.deltaTime);
-        //        yield return null;
-        //    }
-        //}
     }
 }
