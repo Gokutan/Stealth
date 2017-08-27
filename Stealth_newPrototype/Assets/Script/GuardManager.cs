@@ -81,7 +81,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
                 //If want the color to slowy turn red 
                 //spotLight.color = Color.Lerp(OriSpotLightColor,Color.red,float which you want it to turen);
                 spotLight.color = OriSpotLightColor;
-                Time.timeScale = 1;
+               // Time.timeScale = 1;
             }
 
         }
