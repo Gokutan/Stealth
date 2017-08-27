@@ -41,16 +41,14 @@ namespace UnityStandardAssets.Characters.ThirdPerson
             }
         }
 
-        public float h;
-        public float v;
-        public bool crouch;
+
         // Fixed update is called in sync with physics
         private void FixedUpdate()
         {
             // read inputs
-            h = CrossPlatformInputManager.GetAxis("Horizontal");
-            v = CrossPlatformInputManager.GetAxis("Vertical");
-            crouch = Input.GetKey(KeyCode.C);
+            float h = CrossPlatformInputManager.GetAxis("Horizontal");
+            float v = CrossPlatformInputManager.GetAxis("Vertical");
+            bool crouch = Input.GetKey(KeyCode.C);
 
             // calculate move direction to pass to character
             if (m_Cam != null)
