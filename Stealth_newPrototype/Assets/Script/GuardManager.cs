@@ -1,8 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-namespace UnityStandardAssets.Characters.ThirdPerson
-{
+
     public class GuardManager : MonoBehaviour
     {
 
@@ -11,23 +10,16 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 
         public Transform pathHolder;
         public Vector3[] m_waypoint;
-        public float turnSpeed = 90; //90degree per sec
-        IEnumerator currentCoroutine;
+      
+        private IEnumerator currentCoroutine;
 
-        public float speed = 5;
-        public float waitTiem = .3f;
-
-        public Light spotLight;
-        public float viewDistance;
-        float viewAngle;
+      
 
         public LayerMask viewMask;
+        public Light spotLight;
+        private Transform player;
+        private Color OriSpotLightColor;
 
-        Transform player;
-        Color OriSpotLightColor;
-
-        ThirdPersonUserControl tp;
-        ThirdPersonCharacter tpc;
 
         private enum AiModes
         {
@@ -38,16 +30,33 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 
         private AiModes modes;
 
-        [SerializeField]
+        private float speed = 5;
+     
+        //[SerializeField]
+        public float viewDistance;
+        public float viewAngle;
+
+    //  [SerializeField]
+    private float turnSpeed = 90; //90degree per sec
+
+       
+        private int targetWaypointIndex;
+
         private bool make_follow;
+        private bool m_start;
+
+      
+        public float waitTime = 0.3f;
+
+        private float timer;
 
         void Start()
         {
             make_follow = true;
-            player = GameObject.FindGameObjectWithTag("Player").transform;
-            tp = player.GetComponent<ThirdPersonUserControl>();
-            tpc = player.GetComponent<ThirdPersonCharacter>();
-            viewAngle = spotLight.spotAngle;
+
+           // waitTime = 2f;
+          //  player = GameObject.FindGameObjectWithTag("Player").transform;
+            //viewAngle = spotLight.spotAngle;
             OriSpotLightColor = spotLight.color;
 
             m_waypoint = new Vector3[pathHolder.childCount];
@@ -59,54 +68,54 @@ namespace UnityStandardAssets.Characters.ThirdPerson
                 m_waypoint[i] = new Vector3(m_waypoint[i].x, transform.position.y, m_waypoint[i].z);
 
             }
-            //StartCoroutine(FollowPath(m_waypoint));
+           
 
+          StartCoroutine(FollowPath());
+   
 
         }
 
         void Update()
         {
 
-           
-            if (CanseePlayer())
-            {
-                spotLight.color = Color.red;
-                if (OnguardHadSpottedPlayer != null)
-                {
-                    OnguardHadSpottedPlayer();
-                }
+            // CheckMode();
 
-                make_follow = false;
-                //Time.timeScale = 0;
-            }
-            else
-            {
-                //If want the color to slowy turn red 
-                //spotLight.color = Color.Lerp(OriSpotLightColor,Color.red,float which you want it to turen);
-                spotLight.color = OriSpotLightColor;
-                make_follow = true;
-                if (currentCoroutine != null)
-                {
-                    StopCoroutine(currentCoroutine);
-                }
-                currentCoroutine = FollowPath(m_waypoint);
-                StartCoroutine(currentCoroutine);
+//            timer += Time.deltaTime;
+
+//            if (CanseePlayer())
+//            {
+//                spotLight.color = Color.red;
+//                //if (OnguardHadSpottedPlayer != null)
+//                //{
+//                //    OnguardHadSpottedPlayer();
+//                //}
+//                modes = AiModes.Found;  
             
-        }
+//              make_follow = false;
+////                StartCoroutine(returnStart());
+//               // StopCoroutine(FollowPath());
+//            }
+//            else
+//            {
+//                //If want the color to slowy turn red 
+//                //spotLight.color = Color.Lerp(OriSpotLightColor,Color.red,float which you want it to turen);
+
+               
+//                spotLight.color = OriSpotLightColor;
+//                make_follow = true;
+
+             
+                   
+//                    FollowPathCopyCat();
+                
+        
+              
+//               // StartCoroutine(FollowPath());
+
+
+//            }
 
         }
-
-        //void FixedUpdate()
-        //{
-
-        //    if (currentCoroutine != null)
-        //    {
-        //        StopCoroutine(currentCoroutine);
-        //    }
-        //    currentCoroutine = FollowPath(m_waypoint);
-        //    StartCoroutine(currentCoroutine);
-        //}
-
 
         void CheckMode()
         {
@@ -114,51 +123,45 @@ namespace UnityStandardAssets.Characters.ThirdPerson
             {
                 case AiModes.Patrol:
                     {
+                        StartCoroutine(FollowPath());
+                    }
+                    break;
 
+                case AiModes.Detected:
+                    {
+                        StartCoroutine(FollowPath());
+                    }
+                    break;
+                case AiModes.Found:
+                    {
+                        StartCoroutine(returnStart());
                     }
                     break;
             }
                
         }
 
+    bool CanseePlayer()
+    {
+        //if (Vector3.Distance(transform.position, player.position) < viewDistance)
+        //{
+        //    Vector3 dirToPlayer = (player.position - transform.position).normalized;
+        //    float angleBetweenGuardAndPlayer = Vector3.Angle(transform.forward, dirToPlayer);
 
-        void OnDrawGizmos()
-        {
-            Vector3 startPosition = pathHolder.GetChild(0).position;
-            Vector3 previousPosition = startPosition;
-            foreach (Transform waypoint in pathHolder)
-            {
-                Gizmos.DrawSphere(waypoint.position, .3f);
-                Gizmos.DrawLine(previousPosition, waypoint.position);
-                previousPosition = waypoint.position;
-            }
-            //   Gizmos.DrawLine(previousPosition, startPosition); // to draw close loop
+        //    if (angleBetweenGuardAndPlayer < viewAngle / 2f)
+        //    {
+        //        if (!Physics.Linecast(transform.position, player.position, viewMask))
+        //        {
+        //            return true;
+        //        }
+        //    }
+        //}
+        return false;
 
-            Gizmos.color = Color.red;
-            Gizmos.DrawRay(transform.position, transform.forward * viewDistance);
-        }
-
-        bool CanseePlayer()
-        {
-            if (Vector3.Distance(transform.position, player.position) < viewDistance)
-            {
-                Vector3 dirToPlayer = (player.position - transform.position).normalized;
-                float angleBetweenGuardAndPlayer = Vector3.Angle(transform.forward, dirToPlayer);
-
-                if (angleBetweenGuardAndPlayer < viewAngle / 2f)
-                {
-                    if (!Physics.Linecast(transform.position, player.position, viewMask))
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
-
-        }
+    }
 
 
-        IEnumerator TurnToFace(Vector3 lookTarget)
+    IEnumerator TurnToFace(Vector3 lookTarget)
         {
             Vector3 dirToLookTarget = (lookTarget - transform.position).normalized;
             float targetAngle = 90 - Mathf.Atan2(dirToLookTarget.z, dirToLookTarget.x) * Mathf.Rad2Deg;
@@ -167,32 +170,114 @@ namespace UnityStandardAssets.Characters.ThirdPerson
             {
                 float angle = Mathf.MoveTowardsAngle(transform.eulerAngles.y, targetAngle, turnSpeed * Time.deltaTime);
                 transform.eulerAngles = Vector3.up * angle;
+              //  yield return new WaitForSeconds(waitTime);
                 yield return null;
             }
+
+          
         }
 
-        IEnumerator FollowPath(Vector3[] waypoints)
+
+
+        IEnumerator returnStart()
         {
-            transform.position = waypoints[0];
-            int targetWaypointIndex = 1;
-            Vector3 targetWaypoint = waypoints[targetWaypointIndex];
+            Vector3 targetWaypoint = m_waypoint[0];
+         
+                yield return StartCoroutine(TurnToFace(targetWaypoint));
+                transform.position = Vector3.MoveTowards(transform.position, targetWaypoint, speed * Time.deltaTime);
+       
+            yield return null;
+            
+        }
+        
+        void FollowPathCopyCat()
+        {
+            Vector3 targetWaypoint = m_waypoint[targetWaypointIndex];
             transform.LookAt(targetWaypoint);
-            while (make_follow == true)
+
+            do
             {
                 transform.position = Vector3.MoveTowards(transform.position, targetWaypoint, speed * Time.deltaTime);
-                //    transform.rotation = Quaternion.LookRotation(transform.rotation,targetWaypoint.rotation)
                 if (transform.position == targetWaypoint)
                 {
                     //when targetWaypointIndex == waypoints.Length so it mod into 0
-                    targetWaypointIndex = (targetWaypointIndex + 1) % waypoints.Length;
-                    targetWaypoint = waypoints[targetWaypointIndex];
-                    yield return new WaitForSeconds(waitTiem);
+                    targetWaypointIndex = (targetWaypointIndex + 1) % m_waypoint.Length;
+                    targetWaypoint = m_waypoint[targetWaypointIndex];
+
+
+
+
+                    StartCoroutine(TurnToFace(targetWaypoint));
+                }
+
+                break;
+            } while (make_follow == true && timer < waitTime);
+
+            //if (make_follow == true)
+            //{
+            //    transform.position = Vector3.MoveTowards(transform.position, targetWaypoint, speed * Time.deltaTime);
+            //    if (transform.position == targetWaypoint)
+            //    {
+            //        //when targetWaypointIndex == waypoints.Length so it mod into 0
+            //        targetWaypointIndex = (targetWaypointIndex + 1) % m_waypoint.Length;
+            //        targetWaypoint = m_waypoint[targetWaypointIndex];
+
+                   
+
+
+            //         StartCoroutine(TurnToFace(targetWaypoint));
+            //    }
+            //}
+        }
+
+        IEnumerator FollowPath()
+        {
+
+
+        transform.position = Vector3.Lerp(transform.position, m_waypoint[0], speed * Time.deltaTime);
+        //transform.position = m_waypoint[0];
+        targetWaypointIndex = 1;
+        Vector3 targetWaypoint = m_waypoint[targetWaypointIndex];
+            transform.LookAt(targetWaypoint);
+
+      
+
+           while(make_follow == true)
+            {
+                transform.position = Vector3.MoveTowards(transform.position, targetWaypoint, speed * Time.deltaTime);
+                if (transform.position == targetWaypoint)
+                {
+                    //when targetWaypointIndex == waypoints.Length so it mod into 0
+                    targetWaypointIndex = (targetWaypointIndex + 1) % m_waypoint.Length;
+                    targetWaypoint = m_waypoint[targetWaypointIndex];
+
+                    yield return new WaitForSeconds(waitTime);
+                    
                     yield return StartCoroutine(TurnToFace(targetWaypoint));
                 }
                 yield return null;
             }
+         
 
         }
 
-    }
+
+
+    //void OnDrawGizmos()
+    //{
+    //    Vector3 startPosition = pathHolder.GetChild(0).position;
+    //    Vector3 previousPosition = startPosition;
+    //    foreach (Transform waypoint in pathHolder)
+    //    {
+    //        Gizmos.DrawSphere(waypoint.position, .3f);
+    //        Gizmos.DrawLine(previousPosition, waypoint.position);
+    //        previousPosition = waypoint.position;
+    //    }
+    //    //   Gizmos.DrawLine(previousPosition, startPosition); // to draw close loop
+
+    //    Gizmos.color = Color.red;
+    //    Gizmos.DrawRay(transform.position, transform.forward * viewDistance);
+    //}
+
 }
+
