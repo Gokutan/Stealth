@@ -10,56 +10,49 @@ using UnityEngine;
 
         public Transform pathHolder;
         public Vector3[] m_waypoint;
-      
-        private IEnumerator currentCoroutine;
 
-      
-
-        public LayerMask viewMask;
-        public Light spotLight;
-        private Transform player;
-        private Color OriSpotLightColor;
+    //    private IEnumerator currentCoroutine;
 
 
-        private enum AiModes
-        {
-            Patrol,
-            Found,
-            Detected
-        }
 
-        private AiModes modes;
+    //    public LayerMask viewMask;
+    //    public Light spotLight;
+    //    private Color OriSpotLightColor;
+    //    private Transform player;
 
-        private float speed = 5;
-     
-        //[SerializeField]
-        public float viewDistance;
-        public float viewAngle;
 
-    //  [SerializeField]
-    private float turnSpeed = 90; //90degree per sec
 
-       
+        public float speed = 5;
+
+    //    //[SerializeField]
+    //    private float viewDistance = 10;
+    //    private float viewAngle;
+
+    ////  [SerializeField]
+        private float turnSpeed = 90; //90degree per sec
+
+
         private int targetWaypointIndex;
 
-        private bool make_follow;
-        private bool m_start;
+        public bool make_follow;
+    //    private bool m_start;
 
-      
-        public float waitTime = 0.3f;
 
-        private float timer;
+        private float waitTime = 0.3f;
+
+    //    private float timer;
+
+    private AIController AIC;
 
         void Start()
         {
             make_follow = true;
+        AIC = this.gameObject.GetComponent<AIController>();
+         //   player = GameObject.FindGameObjectWithTag("Player").transform;
+          //  viewAngle = spotLight.spotAngle;
+         //   OriSpotLightColor = spotLight.color;
 
-           // waitTime = 2f;
-          //  player = GameObject.FindGameObjectWithTag("Player").transform;
-            //viewAngle = spotLight.spotAngle;
-            OriSpotLightColor = spotLight.color;
-
-            m_waypoint = new Vector3[pathHolder.childCount];
+             m_waypoint = new Vector3[pathHolder.childCount];
             for (int i = 0; i < m_waypoint.Length; i++)
             {
                 m_waypoint[i] = pathHolder.GetChild(i).position;
@@ -75,91 +68,38 @@ using UnityEngine;
 
         }
 
-        void Update()
-        {
-
-            // CheckMode();
-
-//            timer += Time.deltaTime;
-
-//            if (CanseePlayer())
-//            {
-//                spotLight.color = Color.red;
-//                //if (OnguardHadSpottedPlayer != null)
-//                //{
-//                //    OnguardHadSpottedPlayer();
-//                //}
-//                modes = AiModes.Found;  
-            
-//              make_follow = false;
-////                StartCoroutine(returnStart());
-//               // StopCoroutine(FollowPath());
-//            }
-//            else
-//            {
-//                //If want the color to slowy turn red 
-//                //spotLight.color = Color.Lerp(OriSpotLightColor,Color.red,float which you want it to turen);
-
-               
-//                spotLight.color = OriSpotLightColor;
-//                make_follow = true;
-
-             
-                   
-//                    FollowPathCopyCat();
-                
-        
-              
-//               // StartCoroutine(FollowPath());
-
-
-//            }
-
-        }
-
-        void CheckMode()
-        {
-            switch (modes)
-            {
-                case AiModes.Patrol:
-                    {
-                        StartCoroutine(FollowPath());
-                    }
-                    break;
-
-                case AiModes.Detected:
-                    {
-                        StartCoroutine(FollowPath());
-                    }
-                    break;
-                case AiModes.Found:
-                    {
-                        StartCoroutine(returnStart());
-                    }
-                    break;
-            }
-               
-        }
-
-    bool CanseePlayer()
+    void Update()
     {
-        //if (Vector3.Distance(transform.position, player.position) < viewDistance)
-        //{
-        //    Vector3 dirToPlayer = (player.position - transform.position).normalized;
-        //    float angleBetweenGuardAndPlayer = Vector3.Angle(transform.forward, dirToPlayer);
 
-        //    if (angleBetweenGuardAndPlayer < viewAngle / 2f)
-        //    {
-        //        if (!Physics.Linecast(transform.position, player.position, viewMask))
-        //        {
-        //            return true;
-        //        }
-        //    }
-        //}
-        return false;
+
+
+      
 
     }
 
+   
+
+
+    //bool CanseePlayer()
+    //{
+    //    if (Vector3.Distance(transform.position, player.position) < viewDistance)
+    //    {
+    //        Vector3 dirToPlayer = (player.position - transform.position).normalized;
+    //        float angleBetweenGuardAndPlayer = Vector3.Angle(transform.forward, dirToPlayer);
+
+    //        if (angleBetweenGuardAndPlayer < viewAngle / 2f)
+    //        {
+    //            if (!Physics.Linecast(transform.position, player.position, viewMask))
+    //            {
+    //                return true;
+    //            }
+    //        }
+    //    }
+    //    return false;
+    //}
+
+
+ 
 
     IEnumerator TurnToFace(Vector3 lookTarget)
         {
@@ -177,7 +117,7 @@ using UnityEngine;
           
         }
 
-
+   
 
         IEnumerator returnStart()
         {
@@ -190,47 +130,12 @@ using UnityEngine;
             
         }
         
-        void FollowPathCopyCat()
-        {
-            Vector3 targetWaypoint = m_waypoint[targetWaypointIndex];
-            transform.LookAt(targetWaypoint);
-
-            do
-            {
-                transform.position = Vector3.MoveTowards(transform.position, targetWaypoint, speed * Time.deltaTime);
-                if (transform.position == targetWaypoint)
-                {
-                    //when targetWaypointIndex == waypoints.Length so it mod into 0
-                    targetWaypointIndex = (targetWaypointIndex + 1) % m_waypoint.Length;
-                    targetWaypoint = m_waypoint[targetWaypointIndex];
-
-
-
-
-                    StartCoroutine(TurnToFace(targetWaypoint));
-                }
-
-                break;
-            } while (make_follow == true && timer < waitTime);
-
-            //if (make_follow == true)
-            //{
-            //    transform.position = Vector3.MoveTowards(transform.position, targetWaypoint, speed * Time.deltaTime);
-            //    if (transform.position == targetWaypoint)
-            //    {
-            //        //when targetWaypointIndex == waypoints.Length so it mod into 0
-            //        targetWaypointIndex = (targetWaypointIndex + 1) % m_waypoint.Length;
-            //        targetWaypoint = m_waypoint[targetWaypointIndex];
-
-                   
-
-
-            //         StartCoroutine(TurnToFace(targetWaypoint));
-            //    }
-            //}
-        }
-
-        IEnumerator FollowPath()
+    public void FollowingPath()
+    {
+        StartCoroutine(FollowPath());
+    }
+      
+       IEnumerator FollowPath()
         {
 
 
