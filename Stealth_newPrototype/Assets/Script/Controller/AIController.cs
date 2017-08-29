@@ -21,7 +21,7 @@ public class AIController : MonoBehaviour {
     public Light spotLight;
     private Color OriSpotLightColor;
 
-    public Vector3 OriWapPoint;
+    public Vector3 OriWayPoint;
 
 
     //[SerializeField]
@@ -57,6 +57,7 @@ public class AIController : MonoBehaviour {
         player = GameObject.FindGameObjectWithTag("Player").transform;
         viewAngle = spotLight.spotAngle;
         OriSpotLightColor = spotLight.color;
+       
 
 
     }
@@ -70,21 +71,22 @@ public class AIController : MonoBehaviour {
 
     public void ChangeSpotLight(bool m_CanSee)
     {
+        OriWayPoint = GM.m_waypoint[0];
         if (m_CanSee)
         {
             spotLight.color = Color.yellow;
            
             GM.make_follow = false;
-            OriWapPoint = GM.m_waypoint[0];
+           
             chase_Timer += Time.deltaTime;
             m_Found = true;
 
-            if (chase_Timer >= 3f && chase_Timer <= 4.8f)
+            if (chase_Timer >= 1f && chase_Timer <= 2.8f)
             {
                 spotLight.color = Color.Lerp(Color.yellow, Color.red, Mathf.PingPong(Time.time, 0.3f));
             }
 
-            else if (chase_Timer >= 5f)
+            else if (chase_Timer >= 3f)
             {
                 m_Detected = true;
                 spotLight.color = Color.red;
@@ -103,13 +105,21 @@ public class AIController : MonoBehaviour {
             spotLight.color = OriSpotLightColor;
             GM.make_follow = true;
             chase_Timer = 0f;
-            if (m_Detected)
-            { GM.StopChase(); GM.enabled = false; print("Lost"); }
-            if (m_Found) { m_Found = false;}
+            if (m_Detected )
+            { GM.StopChase(); GM.enabled = false; print("Detect & Lost"); }
+            if (m_Found) { GM.enabled = false; print("found & Lost"); }
 
             if (GM.enabled == false)
             {
-                StartCoroutine(Restart());
+                if (m_Detected)
+                {
+                    print("Need guard from detect");
+                    StartCoroutine(Restart());
+                }
+               else if(m_Found) { print("Need guard from found"); StartCoroutine(Continue()); }
+              
+                
+               
             }
 
         }
@@ -122,6 +132,42 @@ public class AIController : MonoBehaviour {
 
     }
 
+    void TurnToFace(Vector3 lookTarget)
+    {
+        Vector3 dirToLookTarget = (lookTarget - transform.position).normalized;
+        float targetAngle = 90 - Mathf.Atan2(dirToLookTarget.z, dirToLookTarget.x) * Mathf.Rad2Deg;
+
+        while (Mathf.Abs(Mathf.DeltaAngle(transform.eulerAngles.y, targetAngle)) > 0.05f)
+        {
+            float angle = Mathf.MoveTowardsAngle(transform.eulerAngles.y, targetAngle, 90 * Time.deltaTime);
+            transform.eulerAngles = Vector3.up * angle;
+            // yield return new WaitForSeconds(0.05f);
+            break;
+        }
+    }
+
+    IEnumerator Continue()
+    {
+        while (m_Found == true)
+        {
+            yield return new WaitForSeconds(0.5f);
+            Vector3 targetturn = new Vector3(OriWayPoint.x, OriWayPoint.y, OriWayPoint.z);
+
+            TurnToFace(targetturn);
+            transform.position = Vector3.Lerp(transform.position, OriWayPoint, 5.0f * Time.deltaTime);
+
+            if (transform.position == OriWayPoint)
+            {
+                GM.enabled = true;
+                GM.FollowingPath();
+                yield return m_Found = false;
+            }
+
+           
+
+        }
+    }
+
   
    
 
@@ -130,8 +176,11 @@ public class AIController : MonoBehaviour {
         while (m_Detected == true)
         {
             yield return new WaitForSeconds(0.5f);
-            transform.position = Vector3.Lerp(transform.position, OriWapPoint, 5.0f * Time.deltaTime);
-            if (transform.position == OriWapPoint)
+            Vector3 targetturn = new Vector3(OriWayPoint.x, OriWayPoint.y, OriWayPoint.z);
+            transform.LookAt(OriWayPoint);
+            //   StartCoroutine(TurnToFace(targetturn));
+            transform.position = Vector3.Lerp(transform.position, OriWayPoint, 5.0f * Time.deltaTime);
+            if (transform.position == OriWayPoint)
             {
                 GM.enabled = true;
                 GM.FollowingPath();

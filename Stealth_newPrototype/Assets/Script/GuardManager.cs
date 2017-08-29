@@ -87,17 +87,12 @@ using UnityEngine.AI;
 
    
 
-    IEnumerator returnStart()
-        {
-            Vector3 targetWaypoint = m_waypoint[0];
-         
-                yield return StartCoroutine(TurnToFace(targetWaypoint));
-                transform.position = Vector3.MoveTowards(transform.position, targetWaypoint, speed * Time.deltaTime);
-       
-            yield return null;
-            
-        }
+
         
+    public void Turning(Vector3 target)
+    {
+        StartCoroutine(TurnToFace(target));
+    }
     public void FollowingPath()
     {
         StartCoroutine(FollowPath());
