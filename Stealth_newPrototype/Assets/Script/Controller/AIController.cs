@@ -2,14 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class AIController : MonoBehaviour {
 
-    public Transform pathHolder;
+    
    // private Vector3[] m_waypoint;
 
     private IEnumerator currentCoroutine;
+    
 
-
+    [SerializeField]
+    private GuardManager GM;
+    [SerializeField]
+    private Transform player;
+    public Transform pathHolder;
 
     public LayerMask viewMask;
     public Light spotLight;
@@ -21,21 +27,16 @@ public class AIController : MonoBehaviour {
     //[SerializeField]
     private float viewDistance = 10;
     private float viewAngle;
-
-
-
-
-    public bool make_follow;
-    private bool m_Detected;
-
-    [SerializeField]
-    private GuardManager GM;
-    [SerializeField]
-    private Transform player;
-
-
-
+    private float chase_Timer;
+    private float returnPatrolTimer;
+    
     public bool m_CheckSee;
+    public bool m_Found;
+    public bool m_Detected;
+
+
+
+
 
     private enum AiModes
     {
@@ -47,18 +48,15 @@ public class AIController : MonoBehaviour {
     private AiModes modes;
 
 
-    private float timer;
+  
 
 
     void Start()
     {
-        make_follow = true;
         GM = this.gameObject.GetComponent<GuardManager>();
         player = GameObject.FindGameObjectWithTag("Player").transform;
         viewAngle = spotLight.spotAngle;
         OriSpotLightColor = spotLight.color;
-
-
 
 
     }
@@ -66,6 +64,7 @@ public class AIController : MonoBehaviour {
     void Update()
     {
         ChangeSpotLight(CanseePlayer());
+        
     }
 
 
@@ -73,16 +72,41 @@ public class AIController : MonoBehaviour {
     {
         if (m_CanSee)
         {
-            spotLight.color = Color.red;
+            spotLight.color = Color.yellow;
+           
             GM.make_follow = false;
             OriWapPoint = GM.m_waypoint[0];
-            m_Detected = true;
-            GM.enabled = false;
+            chase_Timer += Time.deltaTime;
+            m_Found = true;
+
+            if (chase_Timer >= 3f && chase_Timer <= 4.8f)
+            {
+                spotLight.color = Color.Lerp(Color.yellow, Color.red, Mathf.PingPong(Time.time, 0.3f));
+            }
+
+            else if (chase_Timer >= 5f)
+            {
+                m_Detected = true;
+                spotLight.color = Color.red;
+                m_Found = false;
+                if (Vector3.Distance(transform.position, player.position) < viewDistance)
+                {
+                    GM.GoChese(player);
+                }
+            }
+           
+
+
         }
         else
         {
             spotLight.color = OriSpotLightColor;
             GM.make_follow = true;
+            chase_Timer = 0f;
+            if (m_Detected)
+            { GM.StopChase(); GM.enabled = false; print("Lost"); }
+            if (m_Found) { m_Found = false;}
+
             if (GM.enabled == false)
             {
                 StartCoroutine(Restart());
@@ -90,21 +114,30 @@ public class AIController : MonoBehaviour {
 
         }
 
-        
+       
+
+       
+       
+
+
     }
 
+  
    
 
     IEnumerator Restart()
     {
-      while (m_Detected == true)
+        while (m_Detected == true)
         {
-            transform.position = Vector3.Lerp(transform.position, OriWapPoint, GM.speed * Time.deltaTime);
-         //   yield return new WaitForSeconds(1f);
-            GM.enabled = true;
-            GM.FollowingPath();
-            yield return new WaitForSeconds(2f);
-            yield return m_Detected = false;
+            yield return new WaitForSeconds(0.5f);
+            transform.position = Vector3.Lerp(transform.position, OriWapPoint, 5.0f * Time.deltaTime);
+            if (transform.position == OriWapPoint)
+            {
+                GM.enabled = true;
+                GM.FollowingPath();
+                yield return m_Detected = false;
+            }
+
         }
     }
 

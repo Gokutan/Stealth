@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
     public class GuardManager : MonoBehaviour
     {
@@ -8,98 +9,68 @@ using UnityEngine;
         public static event System.Action OnguardHadSpottedPlayer;
 
 
+        NavMeshAgent agent;
+
         public Transform pathHolder;
         public Vector3[] m_waypoint;
 
-    //    private IEnumerator currentCoroutine;
-
-
-
-    //    public LayerMask viewMask;
-    //    public Light spotLight;
-    //    private Color OriSpotLightColor;
-    //    private Transform player;
-
-
-
         public float speed = 5;
 
-    //    //[SerializeField]
-    //    private float viewDistance = 10;
-    //    private float viewAngle;
-
-    ////  [SerializeField]
         private float turnSpeed = 90; //90degree per sec
 
 
         private int targetWaypointIndex;
 
         public bool make_follow;
-    //    private bool m_start;
 
 
         private float waitTime = 0.3f;
+    private bool m_start = true;
 
-    //    private float timer;
 
     private AIController AIC;
 
         void Start()
         {
             make_follow = true;
-        AIC = this.gameObject.GetComponent<AIController>();
-         //   player = GameObject.FindGameObjectWithTag("Player").transform;
-          //  viewAngle = spotLight.spotAngle;
-         //   OriSpotLightColor = spotLight.color;
-
-             m_waypoint = new Vector3[pathHolder.childCount];
-            for (int i = 0; i < m_waypoint.Length; i++)
-            {
-                m_waypoint[i] = pathHolder.GetChild(i).position;
-
-                //set the path node to be that same y as guard
-                m_waypoint[i] = new Vector3(m_waypoint[i].x, transform.position.y, m_waypoint[i].z);
-
-            }
-           
+            AIC = this.gameObject.GetComponent<AIController>();
+        agent = this.gameObject.GetComponent<NavMeshAgent>();
+        agent.enabled = false;
+            SetUpPath();
 
           StartCoroutine(FollowPath());
-   
-
         }
 
-    void Update()
+    void Update ()
     {
-
-
-
       
-
     }
 
-   
+    public void GoChese(Transform target)
+    {
+        agent.enabled = true;
+        agent.SetDestination(target.transform.position);
+    }
 
+    public void StopChase()
+    {
+       // agent.Stop();
+        agent.enabled = false;
+    }
 
-    //bool CanseePlayer()
-    //{
-    //    if (Vector3.Distance(transform.position, player.position) < viewDistance)
-    //    {
-    //        Vector3 dirToPlayer = (player.position - transform.position).normalized;
-    //        float angleBetweenGuardAndPlayer = Vector3.Angle(transform.forward, dirToPlayer);
+    void SetUpPath()
+    {
+        m_waypoint = new Vector3[pathHolder.childCount];
+        for (int i = 0; i < m_waypoint.Length; i++)
+        {
+            m_waypoint[i] = pathHolder.GetChild(i).position;
 
-    //        if (angleBetweenGuardAndPlayer < viewAngle / 2f)
-    //        {
-    //            if (!Physics.Linecast(transform.position, player.position, viewMask))
-    //            {
-    //                return true;
-    //            }
-    //        }
-    //    }
-    //    return false;
-    //}
+            //set the path node to be that same y as guard
+            m_waypoint[i] = new Vector3(m_waypoint[i].x, transform.position.y, m_waypoint[i].z);
 
-
- 
+        }
+    }
+    
 
     IEnumerator TurnToFace(Vector3 lookTarget)
         {
@@ -110,16 +81,13 @@ using UnityEngine;
             {
                 float angle = Mathf.MoveTowardsAngle(transform.eulerAngles.y, targetAngle, turnSpeed * Time.deltaTime);
                 transform.eulerAngles = Vector3.up * angle;
-              //  yield return new WaitForSeconds(waitTime);
                 yield return null;
             }
-
-          
         }
 
    
 
-        IEnumerator returnStart()
+    IEnumerator returnStart()
         {
             Vector3 targetWaypoint = m_waypoint[0];
          
@@ -135,18 +103,19 @@ using UnityEngine;
         StartCoroutine(FollowPath());
     }
       
-       IEnumerator FollowPath()
+    IEnumerator FollowPath()
         {
 
-
+        if (m_start)
+        {
+          
+            m_start = false;
+        }
         transform.position = Vector3.Lerp(transform.position, m_waypoint[0], speed * Time.deltaTime);
-        //transform.position = m_waypoint[0];
         targetWaypointIndex = 1;
+
         Vector3 targetWaypoint = m_waypoint[targetWaypointIndex];
-            transform.LookAt(targetWaypoint);
-
-      
-
+        transform.LookAt(targetWaypoint);
            while(make_follow == true)
             {
                 transform.position = Vector3.MoveTowards(transform.position, targetWaypoint, speed * Time.deltaTime);
@@ -162,27 +131,11 @@ using UnityEngine;
                 }
                 yield return null;
             }
-         
-
         }
 
 
 
-    //void OnDrawGizmos()
-    //{
-    //    Vector3 startPosition = pathHolder.GetChild(0).position;
-    //    Vector3 previousPosition = startPosition;
-    //    foreach (Transform waypoint in pathHolder)
-    //    {
-    //        Gizmos.DrawSphere(waypoint.position, .3f);
-    //        Gizmos.DrawLine(previousPosition, waypoint.position);
-    //        previousPosition = waypoint.position;
-    //    }
-    //    //   Gizmos.DrawLine(previousPosition, startPosition); // to draw close loop
-
-    //    Gizmos.color = Color.red;
-    //    Gizmos.DrawRay(transform.position, transform.forward * viewDistance);
-    //}
+  
 
 }
 
