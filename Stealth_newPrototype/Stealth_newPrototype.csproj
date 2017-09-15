@@ -131,8 +131,16 @@
     <Compile Include="Assets\Morgue Room PBR\Standard Assets\Effects\ImageEffects\Scripts\Twirl.cs" />
     <Compile Include="Assets\Morgue Room PBR\Standard Assets\Effects\ImageEffects\Scripts\VignetteAndChromaticAberration.cs" />
     <Compile Include="Assets\Morgue Room PBR\Standard Assets\Effects\ImageEffects\Scripts\Vortex.cs" />
-    <Compile Include="Assets\Script\CameraController.cs" />
-    <Compile Include="Assets\Script\test_controllerScene.cs" />
+    <Compile Include="Assets\NavMeshComponents\Scripts\NavMeshLink.cs" />
+    <Compile Include="Assets\NavMeshComponents\Scripts\NavMeshModifier.cs" />
+    <Compile Include="Assets\NavMeshComponents\Scripts\NavMeshModifierVolume.cs" />
+    <Compile Include="Assets\NavMeshComponents\Scripts\NavMeshSurface.cs" />
+    <Compile Include="Assets\Script\Controller\AIController.cs" />
+    <Compile Include="Assets\Script\Controller\CameraController.cs" />
+    <Compile Include="Assets\Script\Controller\test_controllerScene.cs" />
+    <Compile Include="Assets\Script\ExternalTool\LocalNavMeshBuilder.cs" />
+    <Compile Include="Assets\Script\ExternalTool\NavMeshSourceTag.cs" />
+    <Compile Include="Assets\Script\GuardManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Morgue Room PBR\Standard Assets\Effects\ImageEffects\Shaders\BlendModesOverlay.shader" />

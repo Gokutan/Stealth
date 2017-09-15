@@ -162,6 +162,11 @@
     <Compile Include="Assets\Morgue Room PBR\Editor\ImageEffects\SunShaftsEditor.cs" />
     <Compile Include="Assets\Morgue Room PBR\Editor\ImageEffects\TonemappingEditor.cs" />
     <Compile Include="Assets\Morgue Room PBR\Editor\ImageEffects\VignetteAndChromaticAberrationEditor.cs" />
+    <Compile Include="Assets\NavMeshComponents\Editor\NavMeshComponentsGUIUtility.cs" />
+    <Compile Include="Assets\NavMeshComponents\Editor\NavMeshLinkEditor.cs" />
+    <Compile Include="Assets\NavMeshComponents\Editor\NavMeshModifierEditor.cs" />
+    <Compile Include="Assets\NavMeshComponents\Editor\NavMeshModifierVolumeEditor.cs" />
+    <Compile Include="Assets\NavMeshComponents\Editor\NavMeshSurfaceEditor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Morgue Room PBR\Standard Assets\Effects\ImageEffects\Shaders\BlendModesOverlay.shader" />
